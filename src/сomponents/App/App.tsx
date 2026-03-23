@@ -3,6 +3,7 @@ import { useState } from "react";
 import SearchBar from "../SearchBar/SearchBar";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import MovieGrid from "../MovieGrid/MovieGrid";
 
 import { fetchMovies } from "../../services/movieService";
 import type { Movie } from "../../types/movie";
@@ -23,9 +24,7 @@ function App() {
       setMovies([]);
       const result = await fetchMovies(query);
       setMovies(result);
-      {
-        result.length === 0 && toast("No movies found on your request");
-      }
+      if (result.length === 0) {toast("No movies found on your request")};
     } catch {
       setIsError(true);
     } finally {
@@ -33,23 +32,18 @@ function App() {
     }
   };
 
+  const handleSelect = (movie: Movie) => {
+    console.log(movie);
+  }
+
   return (
     <>
       <Toaster />
       <SearchBar onSubmit={handleSearch} />
-      {movies.length > 0 && (
-        <ul>
-          {movies.map(({ id, poster_path, title }) => (
-            <li key={id}>
-              <a href={poster_path} target="_blank">
-                {title}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
+      {movies.length > 0 && <MovieGrid movies={movies} onSelect={handleSelect} />}
       {isLoading && <Loader />}
       {isError && <ErrorMessage />}
+      
     </>
   );
 }
