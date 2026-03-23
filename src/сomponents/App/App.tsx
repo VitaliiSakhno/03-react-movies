@@ -7,6 +7,8 @@ import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import { fetchMovies } from "../../services/movieService";
 import type { Movie } from "../../types/movie";
 
+import toast, { Toaster } from "react-hot-toast";
+
 import "./App.module.css";
 
 function App() {
@@ -17,9 +19,13 @@ function App() {
   const handleSearch = async (query: string) => {
     try {
       setIsLoading(true);
-      setIsError(false)
+      setIsError(false);
+      setMovies([]);
       const result = await fetchMovies(query);
       setMovies(result);
+      {
+        result.length === 0 && toast("No movies found on your request");
+      }
     } catch {
       setIsError(true);
     } finally {
@@ -29,6 +35,7 @@ function App() {
 
   return (
     <>
+      <Toaster />
       <SearchBar onSubmit={handleSearch} />
       {movies.length > 0 && (
         <ul>
